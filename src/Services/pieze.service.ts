@@ -1,13 +1,21 @@
 import {queries} from '../Utils/sql.queries'
-import { conectarDB } from './connection.database'
-
-const Queries = new queries();
+import {conectarDB} from './connection.database'
 
 export const getPieces = async () => {
     try {
         const db = await conectarDB();
-        const query = db.query(Queries.QUERY_FIND_PIECES)
+        const query = db.query(queries.QUERY_FIND_PIECES)
         return (await query).rows
+    } catch (error) {
+        return { message: error }
+    }
+}
+
+export const getPiecesExpecific = async (id : number) => {
+    try {
+        const db = await conectarDB();
+        const query = db.query(queries.QUERY_FIND_PIECES_BYID,[id])
+        return (await query).rows[0]
     } catch (error) {
         return { message: error }
     }
@@ -16,7 +24,7 @@ export const getPieces = async () => {
 export const createPiece = async (nombre:string) => {
     try {
         const db = await conectarDB();
-        const query = db.query(Queries.QUERY_CREATE_PIECE,[nombre])
+        const query = db.query(queries.QUERY_CREATE_PIECE,[nombre])
         return (await query).rowCount
     } catch (error) {
         return { message: error }
@@ -26,7 +34,7 @@ export const createPiece = async (nombre:string) => {
 export const deletePiece = async (id:number) => {
     try {
         const db = await conectarDB();
-        const query = db.query(Queries.QUERY_DELETE_PIECE,[id])
+        const query = db.query(queries.QUERY_DELETE_PIECE,[id])
         return (await query).rowCount
     } catch (error) {
         return { message: error }
@@ -36,11 +44,13 @@ export const deletePiece = async (id:number) => {
 export const updatePiece = async (nombre:string,id:number) => {
     try {
         const db = await conectarDB();
-        const query = db.query(Queries.QUERY_UPDATE_PIECE,[nombre,id])
+        const query = db.query(queries.QUERY_UPDATE_PIECE,[nombre,id])
         return (await query).rowCount
     } catch (error) {
         return { message: error }
     }
 }
+
+
 
 

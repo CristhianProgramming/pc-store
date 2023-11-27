@@ -1,20 +1,19 @@
 import { Router } from "express";
-import * as store from "../Services/store.service"
+import * as service from "../Services/pieze.service"
 export const routerStore = Router()
 
-routerStore.get('/store/', (req, res) => {
-    res.json('Hola Mundo Store')
-})
-
-routerStore.get('/store/piece', (req, res) => {
-    store.getPieces().then((r) => res.json(r))
+routerStore.get('/store/pieces/:id?', (req, res) => {
+    if (req.params.id) {
+        return service.getPiecesExpecific(parseInt(req.params.id)).then((r) => res.json(r))
+    }
+    service.getPieces().then((r) => res.json(r))
 })
 
 routerStore.post('/store/piece', (req, res) => {
     if (req.body.nombre === undefined) {
         return res.status(400).json({ message: "El cuerpo de la respuesta debe contener el valor nombre" })
     } else {
-        store.createPiece(req.body.nombre).then((r) => {
+        service.createPiece(req.body.nombre).then((r) => {
             if (r === 1) {
                 res.status(201).json({ message: `Recurso ${req.body.nombre} correctamente creado` })
             } else {
@@ -30,7 +29,7 @@ routerStore.put('/store/piece/:id', (req, res) => {
     if (idPiece > 1 && nombre === undefined) {
         return res.status(400).json({ message: "El cuerpo de la respuesta debe contener el valor nombre y el valor de la id debe ser un numero mayor a 0" })
     }
-    store.updatePiece(nombre, idPiece).then((r) => {
+    service.updatePiece(nombre, idPiece).then((r) => {
         if (r === 0) {
             res.status(400).json({ message: `No se logro modificar el recurso` })
         } else {
@@ -43,7 +42,7 @@ routerStore.put('/store/piece/:id', (req, res) => {
 routerStore.delete('/store/piece/:id', (req, res) => {
     const idPiece: number = parseInt(req.params.id)
     if (idPiece > 1) {
-        store.deletePiece(idPiece).then((r) => {
+        service.deletePiece(idPiece).then((r) => {
             if (r == 0) {
                 res.status(404).json({ message: "No se pudo encontrar el recurso" })
             } else {
